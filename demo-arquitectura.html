@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma Estúdio — Arquitetura & Design de Interiores · São Paulo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;1,200;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --paper:   #f8f7f4;
+  --paper2:  #f2f0eb;
+  --ink:     #111110;
+  --ink2:    #2a2a28;
+  --mid:     #7a7a76;
+  --light:   #c8c8c2;
+  --sage:    #87a878;
+  --sage2:   #6a8d5c;
+  --sage-bg: rgba(135,168,120,0.08);
+  --white:   #ffffff;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+#cur { position:fixed; width:8px; height:8px; background:var(--ink); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .2s,height .2s,background .2s; mix-blend-mode:multiply; }
+#cur-ring { position:fixed; width:36px; height:36px; border:1px solid var(--ink); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:left .1s ease,top .1s ease,width .3s,height .3s,border-color .2s; mix-blend-mode:multiply; }
+body.cur-hover #cur { width:5px; height:5px; background:var(--sage); }
+body.cur-hover #cur-ring { width:52px; height:52px; border-color:var(--sage); }
+body.cur-dark #cur { background:var(--white); mix-blend-mode:normal; }
+body.cur-dark #cur-ring { border-color:rgba(255,255,255,0.5); }
+
+/* ── NAV ── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.8rem 4rem;
+  transition:background .4s, border-color .4s;
+}
+nav.scrolled {
+  background:rgba(248,247,244,0.96);
+  border-bottom:1px solid var(--light);
+  backdrop-filter:blur(8px);
+}
+.nav-logo {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.15rem; font-weight:300; letter-spacing:0.18em;
+  text-transform:uppercase; color:var(--white); text-decoration:none;
+  transition:color .3s;
+}
+nav.scrolled .nav-logo { color:var(--ink); }
+.nav-links { display:flex; gap:2.5rem; list-style:none; }
+.nav-links a {
+  font-size:0.68rem; font-weight:400; letter-spacing:0.2em;
+  text-transform:uppercase; color:rgba(255,255,255,0.6);
+  text-decoration:none; transition:color .2s;
+}
+nav.scrolled .nav-links a { color:var(--mid); }
+.nav-links a:hover { color:var(--sage) !important; }
+.nav-cta {
+  font-size:0.65rem; font-weight:500; letter-spacing:0.2em;
+  text-transform:uppercase; color:var(--ink);
+  background:var(--white); padding:.6rem 1.4rem;
+  text-decoration:none; transition:background .2s;
+}
+nav.scrolled .nav-cta { background:var(--ink); color:var(--white); }
+.nav-cta:hover { background:var(--sage) !important; color:var(--white) !important; }
+
+/* ── HERO ── */
+.hero {
+  position:relative; height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.hero-bg { position:absolute; inset:0; }
+.hero-bg img {
+  width:100%; height:115%; object-fit:cover; object-position:center;
+  filter:brightness(0.45) contrast(1.05);
+  transform:translateY(0); transition:transform .1s linear;
+}
+.hero-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to top, rgba(17,17,16,0.5) 0%, transparent 60%);
+}
+.hero-content {
+  position:relative; z-index:2;
+  text-align:center; padding:0 2rem;
+}
+.hero-pre {
+  font-size:0.62rem; font-weight:400; letter-spacing:0.55em;
+  text-transform:uppercase; color:rgba(255,255,255,0.55);
+  margin-bottom:2.5rem;
+  opacity:0; animation:fadeUp .9s ease .3s forwards;
+}
+.hero-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(5rem,12vw,11rem);
+  font-weight:200; line-height:.88; letter-spacing:.08em;
+  color:var(--white); text-transform:uppercase;
+  opacity:0; animation:fadeUp 1.2s ease .5s forwards;
+}
+.hero-title em {
+  display:block; font-style:italic; font-weight:200;
+  font-size:.55em; letter-spacing:.15em; color:rgba(255,255,255,.55);
+}
+.hero-line {
+  width:1px; height:3rem; background:rgba(255,255,255,0.35);
+  margin:2.5rem auto 0;
+  opacity:0; animation:fadeUp .8s ease 1s forwards, scrollPulse 2.5s ease 1.5s infinite;
+}
+@keyframes scrollPulse { 0%,100%{opacity:.35;transform:scaleY(1)} 50%{opacity:.8;transform:scaleY(1.15)} }
+.hero-scroll-label {
+  font-size:.58rem; letter-spacing:.35em; text-transform:uppercase;
+  color:rgba(255,255,255,.35); margin-top:.8rem;
+  opacity:0; animation:fadeUp .8s ease 1.1s forwards;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+
+/* ── SHARED ── */
+.eyebrow {
+  font-size:.62rem; font-weight:400; letter-spacing:.4em;
+  text-transform:uppercase; color:var(--sage); margin-bottom:1rem;
+}
+.h-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.2rem,4.5vw,3.8rem);
+  font-weight:300; line-height:1.05; color:var(--ink);
+}
+.h-title em { font-style:italic; color:var(--mid); }
+
+.reveal { opacity:0; transform:translateY(24px); transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1); }
+.reveal.visible { opacity:1; transform:none; }
+.rd1{transition-delay:.08s} .rd2{transition-delay:.16s} .rd3{transition-delay:.24s} .rd4{transition-delay:.32s}
+
+/* ── PROYETOS ── */
+#projetos {
+  padding:8rem 4rem;
+  background:var(--paper);
+}
+.projetos-header {
+  display:grid; grid-template-columns:1fr auto;
+  align-items:end; margin-bottom:4rem;
+}
+.projetos-count {
+  font-size:.7rem; font-weight:400; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--light);
+  padding-bottom:.3rem;
+}
+.projetos-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1.5px; background:var(--light);
+  border:1.5px solid var(--light);
+}
+.projeto-card {
+  background:var(--paper); overflow:hidden;
+  position:relative; cursor:none;
+  aspect-ratio:4/3;
+}
+.projeto-card:nth-child(1) { aspect-ratio:auto; grid-row:span 2; }
+.projeto-img {
+  width:100%; height:100%; object-fit:cover;
+  transition:transform .7s cubic-bezier(.25,.46,.45,.94), filter .4s;
+  filter:grayscale(15%) brightness(.95);
+}
+.projeto-card:hover .projeto-img { transform:scale(1.06); filter:grayscale(0%) brightness(1); }
+.projeto-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to top, rgba(17,17,16,.82) 0%, transparent 55%);
+  opacity:0; transition:opacity .4s;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  padding:1.8rem;
+}
+.projeto-card:hover .projeto-overlay { opacity:1; }
+.projeto-cat {
+  font-size:.6rem; font-weight:500; letter-spacing:.3em;
+  text-transform:uppercase; color:var(--sage); margin-bottom:.4rem;
+}
+.projeto-name {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.4rem; font-weight:300; color:var(--white);
+  margin-bottom:.25rem;
+}
+.projeto-year { font-size:.72rem; color:rgba(255,255,255,.45); }
+.projeto-arrow {
+  position:absolute; top:1.2rem; right:1.2rem;
+  width:32px; height:32px; border:1px solid rgba(255,255,255,.3);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  opacity:0; transform:scale(.8); transition:opacity .3s,transform .3s;
+}
+.projeto-card:hover .projeto-arrow { opacity:1; transform:scale(1); }
+.projeto-arrow svg { width:12px; height:12px; stroke:white; }
+
+/* ── MODAL ── */
+.modal-bg {
+  position:fixed; inset:0; background:rgba(17,17,16,.9);
+  z-index:500; display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity .35s;
+  backdrop-filter:blur(6px);
+}
+.modal-bg.open { opacity:1; pointer-events:all; }
+.modal {
+  background:var(--paper); max-width:900px; width:90%;
+  max-height:88vh; overflow-y:auto; position:relative;
+  transform:translateY(20px); transition:transform .35s cubic-bezier(.16,1,.3,1);
+}
+.modal-bg.open .modal { transform:none; }
+.modal-close {
+  position:absolute; top:1.2rem; right:1.2rem;
+  width:36px; height:36px; border:1px solid var(--light);
+  background:transparent; cursor:none;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.9rem; color:var(--mid); transition:background .2s;
+  z-index:10;
+}
+.modal-close:hover { background:var(--ink); color:var(--white); }
+.modal-imgs {
+  display:grid; grid-template-columns:2fr 1fr;
+  gap:2px; background:var(--light); height:340px;
+}
+.modal-img { overflow:hidden; }
+.modal-img img { width:100%; height:100%; object-fit:cover; }
+.modal-body { padding:2.5rem; }
+.modal-cat {
+  font-size:.6rem; font-weight:500; letter-spacing:.3em;
+  text-transform:uppercase; color:var(--sage); margin-bottom:.6rem;
+}
+.modal-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:2rem; font-weight:300; margin-bottom:1.2rem;
+}
+.modal-desc { font-size:.88rem; color:var(--mid); line-height:1.85; margin-bottom:1.5rem; }
+.modal-meta {
+  display:flex; gap:2.5rem;
+  border-top:1px solid var(--paper2); padding-top:1.2rem;
+}
+.modal-meta-item { }
+.modal-meta-label { font-size:.58rem; letter-spacing:.25em; text-transform:uppercase; color:var(--light); margin-bottom:.3rem; }
+.modal-meta-val { font-size:.85rem; font-weight:400; color:var(--ink); }
+
+/* ── ESTÚDIO ── */
+#estudio {
+  padding:8rem 4rem;
+  background:var(--paper2);
+}
+.estudio-top {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:6rem; margin-bottom:6rem; align-items:end;
+}
+.estudio-filosofia { font-size:1.05rem; font-weight:300; color:var(--mid); line-height:1.9; margin-top:1.8rem; }
+.estudio-filosofia strong { color:var(--ink); font-weight:400; }
+
+.processo {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:2px; background:var(--light);
+  border:1.5px solid var(--light);
+  margin-top:auto;
+}
+.passo {
+  background:var(--paper2); padding:2rem 1.5rem;
+  transition:background .3s;
+}
+.passo:hover { background:var(--paper); }
+.passo-num {
+  font-family:'Cormorant Garamond',serif;
+  font-size:3rem; font-weight:200; color:var(--sage); opacity:.35;
+  line-height:1; margin-bottom:.8rem;
+}
+.passo-title { font-size:.8rem; font-weight:500; letter-spacing:.05em; margin-bottom:.5rem; }
+.passo-desc { font-size:.78rem; font-weight:300; color:var(--mid); line-height:1.65; }
+
+/* EQUIPE */
+.equipe-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.6rem; font-weight:300; margin-bottom:2.5rem;
+}
+.equipe-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; margin-bottom:5rem; }
+.membro { }
+.membro-img-wrap { overflow:hidden; aspect-ratio:3/4; margin-bottom:1.2rem; }
+.membro-img { width:100%; height:100%; object-fit:cover; object-position:top; filter:grayscale(20%); transition:filter .4s,transform .6s; }
+.membro:hover .membro-img { filter:grayscale(0%); transform:scale(1.03); }
+.membro-name { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:300; margin-bottom:.2rem; }
+.membro-role { font-size:.65rem; font-weight:400; letter-spacing:.22em; text-transform:uppercase; color:var(--sage); margin-bottom:.5rem; }
+.membro-bio { font-size:.78rem; font-weight:300; color:var(--mid); line-height:1.7; }
+
+/* PREMIOS */
+.premios-title { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:300; margin-bottom:2rem; }
+.premios-list { display:flex; flex-direction:column; gap:0; border-top:1px solid var(--light); }
+.premio {
+  display:grid; grid-template-columns:5rem 1fr auto;
+  gap:1.5rem; align-items:center;
+  padding:1.1rem 0; border-bottom:1px solid var(--light);
+  transition:background .2s;
+}
+.premio:hover { background:rgba(135,168,120,.05); }
+.premio-year { font-family:'Cormorant Garamond',serif; font-size:.9rem; font-style:italic; color:var(--sage); }
+.premio-name { font-size:.85rem; font-weight:400; }
+.premio-org { font-size:.72rem; color:var(--mid); }
+
+/* ── CONTATO ── */
+#contato {
+  padding:8rem 4rem;
+  background:var(--paper);
+  display:grid; grid-template-columns:1fr 1.2fr;
+  gap:7rem; align-items:start;
+}
+.contato-info .h-title { margin-bottom:1.5rem; }
+.contato-intro { font-size:.88rem; font-weight:300; color:var(--mid); line-height:1.9; margin-bottom:3rem; }
+.contato-detail { margin-bottom:1.5rem; }
+.contato-label { font-size:.58rem; font-weight:500; letter-spacing:.3em; text-transform:uppercase; color:var(--light); margin-bottom:.3rem; }
+.contato-val { font-size:.92rem; font-weight:300; color:var(--ink); }
+
+.form-group { margin-bottom:1.3rem; }
+.form-label { display:block; font-size:.6rem; font-weight:500; letter-spacing:.28em; text-transform:uppercase; color:var(--light); margin-bottom:.5rem; }
+.form-input, .form-select, .form-textarea {
+  width:100%; background:transparent; border:none;
+  border-bottom:1px solid var(--light);
+  padding:.65rem 0; font-family:'Inter',sans-serif;
+  font-size:.9rem; font-weight:300; color:var(--ink);
+  outline:none; transition:border-color .3s;
+  appearance:none; -webkit-appearance:none;
+}
+.form-input::placeholder { color:var(--light); }
+.form-input:focus,.form-select:focus,.form-textarea:focus { border-bottom-color:var(--ink); }
+.form-textarea { resize:none; height:90px; line-height:1.7; }
+.form-select { cursor:pointer; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+.btn-send {
+  display:inline-flex; align-items:center; gap:.9rem;
+  font-family:'Inter',sans-serif; font-size:.68rem; font-weight:500;
+  letter-spacing:.25em; text-transform:uppercase;
+  color:var(--white); background:var(--ink); border:none;
+  padding:1rem 2rem; cursor:none; margin-top:.8rem;
+  transition:background .25s, letter-spacing .3s;
+}
+.btn-send:hover { background:var(--sage); letter-spacing:.32em; }
+.btn-send svg { width:14px; height:14px; transition:transform .3s; }
+.btn-send:hover svg { transform:translateX(5px); }
+
+/* ── PANEL CMS ── */
+#panel {
+  padding:5rem 4rem 7rem;
+  background:var(--ink);
+}
+.panel-header { margin-bottom:3rem; }
+.panel-badge {
+  display:inline-flex; align-items:center; gap:.5rem;
+  border:1px solid rgba(135,168,120,.3); padding:.3rem .9rem;
+  margin-bottom:1.2rem;
+  font-size:.6rem; font-weight:400; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--sage);
+}
+.panel-badge-dot { width:5px; height:5px; border-radius:50%; background:var(--sage); animation:blink 2s infinite; }
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.panel-h { font-family:'Cormorant Garamond',serif; font-size:1.8rem; font-weight:300; color:var(--white); margin-bottom:.5rem; }
+.panel-sub { font-size:.82rem; font-weight:300; color:rgba(255,255,255,.35); max-width:460px; line-height:1.7; }
+
+.panel-window {
+  background:#0a0a0a; border:1px solid #1e1e1e; overflow:hidden;
+}
+.panel-topbar {
+  background:#111; border-bottom:1px solid #1e1e1e;
+  padding:.8rem 1rem; display:flex; align-items:center; gap:.5rem;
+}
+.p-dot { width:9px; height:9px; border-radius:50%; }
+.p-dot.r{background:#ff5f57}.p-dot.y{background:#febc2e}.p-dot.g{background:#28c840}
+.p-url { flex:1; background:#0a0a0a; border:1px solid #222; padding:.25rem .7rem; margin-left:.4rem; font-size:.68rem; color:#555; font-family:monospace; }
+.panel-layout { display:grid; grid-template-columns:190px 1fr; }
+.panel-side { background:#0d0d0d; border-right:1px solid #1a1a1a; padding:1rem 0; }
+.p-side-title { font-size:.55rem; font-weight:500; letter-spacing:.22em; text-transform:uppercase; color:#333; padding:0 1rem .7rem; border-bottom:1px solid #151515; margin-bottom:.4rem; }
+.p-nav { display:flex; align-items:center; gap:.5rem; padding:.5rem 1rem; font-size:.75rem; color:#444; cursor:pointer; transition:background .15s,color .15s; }
+.p-nav:hover { background:#151515; color:#888; }
+.p-nav.active { background:rgba(135,168,120,.08); color:var(--sage); border-left:2px solid var(--sage); }
+.p-nav-icon { font-size:.75rem; }
+.panel-main { padding:1.5rem; }
+.panel-main-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2rem; }
+.panel-main-title { font-size:.82rem; font-weight:500; color:#bbb; }
+.p-add-btn { font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--ink); background:var(--sage); border:none; padding:.35rem .9rem; cursor:pointer; }
+.p-table { width:100%; border-collapse:collapse; }
+.p-table th { font-size:.55rem; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:#333; padding:.5rem .6rem; text-align:left; border-bottom:1px solid #1a1a1a; }
+.p-table td { padding:.65rem .6rem; border-bottom:1px solid #111; font-size:.75rem; color:#666; vertical-align:middle; }
+.p-table tr:hover td { background:#0f0f0f; }
+.p-table td:first-child { color:#aaa; }
+.p-tag { font-size:.58rem; letter-spacing:.12em; text-transform:uppercase; padding:.18rem .5rem; }
+.p-tag.res { background:rgba(135,168,120,.12); color:var(--sage); }
+.p-tag.com { background:rgba(196,113,79,.12); color:#c4714f; }
+.p-tag.int { background:rgba(100,100,200,.12); color:#8888dd; }
+.p-edit { font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:#333; background:transparent; border:1px solid #222; padding:.2rem .55rem; cursor:pointer; transition:color .15s,border-color .15s; }
+.p-edit:hover { color:var(--sage); border-color:var(--sage); }
+.p-bar-foot { background:#0a0a0a; border-top:1px solid #1a1a1a; padding:.6rem 1.5rem; display:flex; justify-content:space-between; align-items:center; font-size:.62rem; color:#2a2a2a; }
+.p-save { font-size:.62rem; letter-spacing:.15em; text-transform:uppercase; color:var(--ink); background:var(--sage); border:none; padding:.38rem 1.1rem; cursor:pointer; }
+
+/* ── FOOTER ── */
+footer {
+  background:var(--ink2); padding:2.5rem 4rem;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.ft-logo { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:300; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+.ft-copy { font-size:.68rem; font-weight:300; color:rgba(255,255,255,.2); }
+
+@media(max-width:900px){
+  nav{padding:1.2rem 1.5rem;}
+  .nav-links{display:none;}
+  #projetos,#estudio,#contato,#panel{padding:4rem 1.5rem;}
+  .projetos-grid{grid-template-columns:1fr 1fr;}
+  .projeto-card:nth-child(1){grid-row:auto;aspect-ratio:4/3;}
+  .estudio-top{grid-template-columns:1fr;gap:3rem;}
+  .processo{grid-template-columns:1fr 1fr;}
+  .equipe-grid{grid-template-columns:1fr;}
+  .premio{grid-template-columns:3rem 1fr;}
+  .premio-org{display:none;}
+  #contato{grid-template-columns:1fr;gap:3rem;}
+  .form-row{grid-template-columns:1fr;}
+  .panel-layout{grid-template-columns:1fr;}
+  .panel-side{display:none;}
+  footer{flex-direction:column;gap:.5rem;text-align:center;padding:2rem;}
+  body{cursor:auto;}
+  #cur,#cur-ring{display:none;}
+  .modal-imgs{grid-template-columns:1fr;height:240px;}
+  .modal-imgs .modal-img:not(:first-child){display:none;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Forma Estúdio</a>
+  <ul class="nav-links">
+    <li><a href="#projetos">Projetos</a></li>
+    <li><a href="#estudio">Estúdio</a></li>
+    <li><a href="#contato">Contato</a></li>
+  </ul>
+  <a href="#contato" class="nav-cta">Iniciar projeto</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-bg">
+    <img id="hero-par" src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1800&q=85&auto=format&fit=crop" alt="Forma Estúdio">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-pre">São Paulo · Arquitetura & Interiores · Est. 2015</p>
+    <h1 class="hero-title">
+      Forma<br>
+      <em>Estúdio</em>
+    </h1>
+    <div class="hero-line"></div>
+    <p class="hero-scroll-label">Scroll</p>
+  </div>
+</section>
+
+<!-- PROJETOS -->
+<section id="projetos">
+  <div class="projetos-header reveal">
+    <div>
+      <p class="eyebrow">Portfólio</p>
+      <h2 class="h-title">Nossos <em>projetos.</em></h2>
+    </div>
+    <span class="projetos-count">06 projetos selecionados</span>
+  </div>
+
+  <div class="projetos-grid reveal">
+
+    <div class="projeto-card" data-id="0">
+      <img class="projeto-img" src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&q=80&auto=format&fit=crop" alt="Casa Ipê">
+      <div class="projeto-overlay">
+        <div class="projeto-cat">Residencial</div>
+        <div class="projeto-name">Casa Ipê</div>
+        <div class="projeto-year">2023</div>
+      </div>
+      <div class="projeto-arrow"><svg viewBox="0 0 14 14" fill="none" stroke-width="1.2" stroke-linecap="round"><path d="M1 7h12M7 1l6 6-6 6"/></svg></div>
+    </div>
+
+    <div class="projeto-card" data-id="1">
+      <img class="projeto-img" src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600&q=80&auto=format&fit=crop" alt="Escritório Vértice">
+      <div class="projeto-overlay">
+        <div class="projeto-cat">Comercial</div>
+        <div class="projeto-name">Escritório Vértice</div>
+        <div class="projeto-year">2023</div>
+      </div>
+      <div class="projeto-arrow"><svg viewBox="0 0 14 14" fill="none" stroke-width="1.2" stroke-linecap="round"><path d="M1 7h12M7 1l6 6-6 6"/></svg></div>
+    </div>
+
+    <div class="projeto-card" data-id="2">
+      <img class="projeto-img" src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80&auto=format&fit=crop" alt="Apartamento Jardins">
+      <div class="projeto-overlay">
+        <div class="projeto-cat">Interiorismo</div>
+        <div class="projeto-name">Apê Jardins</div>
+        <div class="projeto-year">2022</div>
+      </div>
+      <div class="projeto-arrow"><svg viewBox="0 0 14 14" fill="none" stroke-width="1.2" stroke-linecap="round"><path d="M1 7h12M7 1l6 6-6 6"/></svg></div>
+    </div>
+
+    <div class="projeto-card" data-id="3">
+      <img class="projeto-img" src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&q=80&auto=format&fit=crop" alt="Villa Serrana">
+      <div class="projeto-overlay">
+        <div class="projeto-cat">Residencial</div>
+        <div class="projeto-name">Villa Serrana</div>
+        <div class="projeto-year">2022</div>
+      </div>
+      <div class="projeto-arrow"><svg viewBox="0 0 14 14" fill="none" stroke-width="1.2" stroke-linecap="round"><path d="M1 7h12M7 1l6 6-6 6"/></svg></div>
+    </div>
+
+    <div class="projeto-card" data-id="4">
+      <img class="projeto-img" src="https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=600&q=80&auto=format&fit=crop" alt="Loja Cora">
+      <div class="projeto-overlay">
+        <div class="projeto-cat">Comercial</div>
+        <div class="projeto-name">Loja Cora</div>
+        <div class="projeto-year">2021</div>
+      </div>
+      <div class="projeto-arrow"><svg viewBox="0 0 14 14" fill="none" stroke-width="1.2" stroke-linecap="round"><path d="M1 7h12M7 1l6 6-6 6"/></svg></div>
+    </div>
+
+    <div class="projeto-card" data-id="5">
+      <img class="projeto-img" src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80&auto=format&fit=crop" alt="Cobertura Pinheiros">
+      <div class="projeto-overlay">
+        <div class="projeto-cat">Interiorismo</div>
+        <div class="projeto-name">Cobertura Pinheiros</div>
+        <div class="projeto-year">2021</div>
+      </div>
+      <div class="projeto-arrow"><svg viewBox="0 0 14 14" fill="none" stroke-width="1.2" stroke-linecap="round"><path d="M1 7h12M7 1l6 6-6 6"/></svg></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div class="modal-imgs" id="modal-imgs">
+      <div class="modal-img"><img id="modal-img1" src="" alt=""></div>
+      <div class="modal-img"><img id="modal-img2" src="" alt=""></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-cat" id="modal-cat"></div>
+      <h3 class="modal-title" id="modal-title"></h3>
+      <p class="modal-desc" id="modal-desc"></p>
+      <div class="modal-meta" id="modal-meta"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ESTÚDIO -->
+<section id="estudio">
+  <div class="estudio-top">
+    <div class="reveal">
+      <p class="eyebrow">O estúdio</p>
+      <h2 class="h-title">Onde forma<br><em>encontra essência.</em></h2>
+      <p class="estudio-filosofia">
+        Acreditamos que a arquitetura vai além da construção. Cada projeto nasce de uma escuta profunda — de quem vive, trabalha ou habita aquele espaço. Nossa metodologia une <strong>rigor técnico</strong> à <strong>sensibilidade poética</strong>, resultando em ambientes que existem em harmonia com seus usuários e com a paisagem que os cerca.
+      </p>
+    </div>
+    <div class="processo reveal rd1">
+      <div class="passo">
+        <div class="passo-num">01</div>
+        <div class="passo-title">Escuta</div>
+        <p class="passo-desc">Entendemos sua rotina, desejos e limitações antes de qualquer rascunho.</p>
+      </div>
+      <div class="passo">
+        <div class="passo-num">02</div>
+        <div class="passo-title">Conceito</div>
+        <p class="passo-desc">Desenvolvemos a identidade do projeto com moodboard, paleta e referências.</p>
+      </div>
+      <div class="passo">
+        <div class="passo-num">03</div>
+        <div class="passo-title">Projeto</div>
+        <p class="passo-desc">Plantas, cortes, renders e especificações técnicas completas.</p>
+      </div>
+      <div class="passo">
+        <div class="passo-num">04</div>
+        <div class="passo-title">Execução</div>
+        <p class="passo-desc">Acompanhamento integral da obra e entrega com curadoria de acabamentos.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="reveal">
+    <h3 class="equipe-title">A equipe</h3>
+    <div class="equipe-grid">
+      <div class="membro reveal rd1">
+        <div class="membro-img-wrap">
+          <img class="membro-img" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80&auto=format&fit=crop&crop=face" alt="Ana Cavalcante">
+        </div>
+        <div class="membro-name">Ana Cavalcante</div>
+        <div class="membro-role">Sócia-fundadora · Arquitetura</div>
+        <p class="membro-bio">Formada pela FAU-USP, mestre em arquitetura sustentável pela ETH Zurique. 14 anos de experiência em projetos residenciais de alto padrão.</p>
+      </div>
+      <div class="membro reveal rd2">
+        <div class="membro-img-wrap">
+          <img class="membro-img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80&auto=format&fit=crop&crop=face" alt="Bruno Mascarenhas">
+        </div>
+        <div class="membro-name">Bruno Mascarenhas</div>
+        <div class="membro-role">Sócio · Interiores</div>
+        <p class="membro-bio">Designer de interiores com trajetória em Milão e Londres. Especialista em mobiliário contemporâneo e curadoria de arte aplicada ao espaço.</p>
+      </div>
+      <div class="membro reveal rd3">
+        <div class="membro-img-wrap">
+          <img class="membro-img" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80&auto=format&fit=crop&crop=face" alt="Camila Fontes">
+        </div>
+        <div class="membro-name">Camila Fontes</div>
+        <div class="membro-role">Arquiteta Sênior · Projetos</div>
+        <p class="membro-bio">Especialista em projetos comerciais e retrofit. Coordena a equipe técnica e gerencia os projetos de maior complexidade do estúdio.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="reveal">
+    <h3 class="premios-title">Reconhecimentos</h3>
+    <div class="premios-list">
+      <div class="premio">
+        <div class="premio-year">2023</div>
+        <div><div class="premio-name">Prêmio Casa Brasileira — Melhor Residência do Ano</div></div>
+        <div class="premio-org">Instituto Brasileiro de Arquitetos</div>
+      </div>
+      <div class="premio">
+        <div class="premio-year">2023</div>
+        <div><div class="premio-name">Top 50 Estúdios Emergentes da América Latina</div></div>
+        <div class="premio-org">Archdaily Brasil</div>
+      </div>
+      <div class="premio">
+        <div class="premio-year">2022</div>
+        <div><div class="premio-name">CASACOR São Paulo — Projeto Destaque</div></div>
+        <div class="premio-org">CASACOR Brasil</div>
+      </div>
+      <div class="premio">
+        <div class="premio-year">2021</div>
+        <div><div class="premio-name">Prêmio Design brasileiro — Categoria Interiores</div></div>
+        <div class="premio-org">Museu da Casa Brasileira</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section id="contato">
+  <div class="contato-info reveal">
+    <p class="eyebrow">Contato</p>
+    <h2 class="h-title">Vamos criar<br><em>algo juntos.</em></h2>
+    <p class="contato-intro">Atendemos projetos em todo o Brasil e no exterior. Cada trabalho começa por uma conversa — conta-nos sobre o seu.</p>
+    <div class="contato-detail">
+      <div class="contato-label">Email</div>
+      <div class="contato-val">projetos@formaestudio.com.br</div>
+    </div>
+    <div class="contato-detail">
+      <div class="contato-label">Telefone</div>
+      <div class="contato-val">+55 11 9 9999-0000</div>
+    </div>
+    <div class="contato-detail">
+      <div class="contato-label">Endereço</div>
+      <div class="contato-val">Rua Oscar Freire 940<br>Jardins, São Paulo — SP</div>
+    </div>
+  </div>
+
+  <div class="reveal rd1">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nome</label>
+        <input type="text" class="form-input" placeholder="Seu nome">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" placeholder="seu@email.com">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Tipo de projeto</label>
+        <select class="form-select">
+          <option value="" disabled selected>Selecione</option>
+          <option>Residência nova</option>
+          <option>Reforma residencial</option>
+          <option>Projeto comercial</option>
+          <option>Design de interiores</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Superfície estimada</label>
+        <select class="form-select">
+          <option value="" disabled selected>Selecione</option>
+          <option>Até 100 m²</option>
+          <option>100 – 250 m²</option>
+          <option>250 – 500 m²</option>
+          <option>Acima de 500 m²</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Orçamento estimado</label>
+      <select class="form-select">
+        <option value="" disabled selected>Selecione</option>
+        <option>Até R$ 200 mil</option>
+        <option>R$ 200k – R$ 500k</option>
+        <option>R$ 500k – R$ 1 milhão</option>
+        <option>Acima de R$ 1 milhão</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mensagem</label>
+      <textarea class="form-textarea" placeholder="Conte-nos sobre seu projeto, localização e prazo desejado..."></textarea>
+    </div>
+    <button class="btn-send" id="send-btn">
+      Enviar mensagem
+      <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M1 7h12M7 1l6 6-6 6"/></svg>
+    </button>
+  </div>
+</section>
+
+<!-- PANEL CMS -->
+<section id="panel">
+  <div class="panel-header reveal">
+    <div class="panel-badge"><div class="panel-badge-dot"></div>Área restrita · Painel do estúdio</div>
+    <h2 class="panel-h">Painel de edição</h2>
+    <p class="panel-sub">Adicione, edite ou arquive projetos do portfólio sem precisar de um desenvolvedor. As alterações ficam online instantaneamente.</p>
+  </div>
+
+  <div class="panel-window reveal rd1">
+    <div class="panel-topbar">
+      <div class="p-dot r"></div><div class="p-dot y"></div><div class="p-dot g"></div>
+      <div class="p-url">formaestudio.com.br/painel/projetos</div>
+    </div>
+    <div class="panel-layout">
+      <div class="panel-side">
+        <div class="p-side-title">Forma Estúdio</div>
+        <div class="p-nav active"><span class="p-nav-icon">🏛</span> Projetos</div>
+        <div class="p-nav"><span class="p-nav-icon">👥</span> Equipe</div>
+        <div class="p-nav"><span class="p-nav-icon">🖼</span> Galeria</div>
+        <div class="p-nav"><span class="p-nav-icon">📝</span> Textos</div>
+        <div class="p-nav"><span class="p-nav-icon">⚙️</span> Configurações</div>
+      </div>
+      <div class="panel-main">
+        <div class="panel-main-top">
+          <span class="panel-main-title">Portfólio — Todos os projetos</span>
+          <button class="p-add-btn">+ Novo projeto</button>
+        </div>
+        <table class="p-table">
+          <thead>
+            <tr><th>Projeto</th><th>Categoria</th><th>Ano</th><th>Visível</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Casa Ipê</td>
+              <td><span class="p-tag res">Residencial</span></td>
+              <td style="color:#555">2023</td>
+              <td style="color:#87a878;font-size:.72rem">● Sim</td>
+              <td><button class="p-edit">Editar</button></td>
+            </tr>
+            <tr>
+              <td>Escritório Vértice</td>
+              <td><span class="p-tag com">Comercial</span></td>
+              <td style="color:#555">2023</td>
+              <td style="color:#87a878;font-size:.72rem">● Sim</td>
+              <td><button class="p-edit">Editar</button></td>
+            </tr>
+            <tr>
+              <td>Apê Jardins</td>
+              <td><span class="p-tag int">Interiorismo</span></td>
+              <td style="color:#555">2022</td>
+              <td style="color:#87a878;font-size:.72rem">● Sim</td>
+              <td><button class="p-edit">Editar</button></td>
+            </tr>
+            <tr>
+              <td>Villa Serrana</td>
+              <td><span class="p-tag res">Residencial</span></td>
+              <td style="color:#555">2022</td>
+              <td style="color:#555;font-size:.72rem">○ Oculto</td>
+              <td><button class="p-edit">Editar</button></td>
+            </tr>
+            <tr>
+              <td>Loja Cora</td>
+              <td><span class="p-tag com">Comercial</span></td>
+              <td style="color:#555">2021</td>
+              <td style="color:#87a878;font-size:.72rem">● Sim</td>
+              <td><button class="p-edit">Editar</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="p-bar-foot">
+          <span>6 projetos · 5 visíveis</span>
+          <button class="p-save">Publicar alterações</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-logo">Forma Estúdio</div>
+  <div class="ft-copy">© 2024 · Jardins, São Paulo · Todos os direitos reservados</div>
+</footer>
+
+<script>
+// Cursor
+const cur = document.getElementById('cur');
+const curRing = document.getElementById('cur-ring');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top  = e.clientY + 'px';
+  curRing.style.left = e.clientX + 'px';
+  curRing.style.top  = e.clientY + 'px';
+});
+document.querySelectorAll('a,button,.projeto-card,.form-input,.form-select,.form-textarea').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cur-hover'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cur-hover'));
+});
+
+// Nav scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', scrollY > 80);
+  const dark = scrollY < window.innerHeight * .85;
+  document.body.classList.toggle('cur-dark', dark);
+}, { passive: true });
+
+// Hero parallax
+const heroImg = document.getElementById('hero-par');
+window.addEventListener('scroll', () => {
+  if (scrollY < window.innerHeight)
+    heroImg.style.transform = `translateY(${scrollY * 0.28}px)`;
+}, { passive: true });
+
+// Scroll reveal
+const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Modal data
+const projetos = [
+  {
+    cat:'Residencial', name:'Casa Ipê', year:'2023',
+    img1:'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=700&q=80&auto=format&fit=crop',
+    img2:'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=500&q=80&auto=format&fit=crop',
+    desc:'Residência unifamiliar de 480 m² no bairro do Morumbi, São Paulo. O projeto parte da relação entre o interior e a vegetação nativa do terreno. Grandes planos de vidro dissolvem os limites entre o estar e o jardim, enquanto a estrutura de concreto aparente dialoga com volumes em madeira de reflorestamento.',
+    meta:[{l:'Área',v:'480 m²'},{l:'Local',v:'Morumbi, SP'},{l:'Status',v:'Concluído'}]
+  },
+  {
+    cat:'Comercial', name:'Escritório Vértice', year:'2023',
+    img1:'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=700&q=80&auto=format&fit=crop',
+    img2:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=500&q=80&auto=format&fit=crop',
+    desc:'Sede corporativa de uma fintech em expansão na Faria Lima. O briefing pedia um ambiente que comunicasse inovação sem abrir mão do acolhimento. A solução: biofilia como elemento estruturante, materiais naturais e iluminação cênica para criar zonas de foco e colaboração.',
+    meta:[{l:'Área',v:'1.200 m²'},{l:'Local',v:'Faria Lima, SP'},{l:'Status',v:'Concluído'}]
+  },
+  {
+    cat:'Interiorismo', name:'Apê Jardins', year:'2022',
+    img1:'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=700&q=80&auto=format&fit=crop',
+    img2:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&q=80&auto=format&fit=crop',
+    desc:'Reforma completa de apartamento de 220 m² para um casal colecionador de arte contemporânea. A proposta reorganizou a planta para criar um circuito de circulação que permite contemplar as obras como em uma galeria, sem perder a sensação de lar.',
+    meta:[{l:'Área',v:'220 m²'},{l:'Local',v:'Jardins, SP'},{l:'Status',v:'Concluído'}]
+  },
+  {
+    cat:'Residencial', name:'Villa Serrana', year:'2022',
+    img1:'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=700&q=80&auto=format&fit=crop',
+    img2:'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&q=80&auto=format&fit=crop',
+    desc:'Casa de campo em Campos do Jordão projetada para uma família que passou a teletrabalhar. O programa incluiu espaço de escritório integrado, área gourmet com lareira dupla face e um pavilhão de meditação separado do volume principal, conectado por passarela sobre lago artificial.',
+    meta:[{l:'Área',v:'620 m²'},{l:'Local',v:'Campos do Jordão, SP'},{l:'Status',v:'Concluído'}]
+  },
+  {
+    cat:'Comercial', name:'Loja Cora', year:'2021',
+    img1:'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=700&q=80&auto=format&fit=crop',
+    img2:'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=500&q=80&auto=format&fit=crop',
+    desc:'Flagship store de marca de moda autoral no Baixo Augusta. O conceito criou uma tensão poética entre o bruto e o delicado: piso de cimento queimado, araras em ferro oxidado e tecidos voilés suspensos. O resultado foi uma loja que virou ponto de encontro cultural.',
+    meta:[{l:'Área',v:'180 m²'},{l:'Local',v:'Baixo Augusta, SP'},{l:'Status',v:'Concluído'}]
+  },
+  {
+    cat:'Interiorismo', name:'Cobertura Pinheiros', year:'2021',
+    img1:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=700&q=80&auto=format&fit=crop',
+    img2:'https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=500&q=80&auto=format&fit=crop',
+    desc:'Cobertura duplex de 310 m² com terraço ajardinado em Pinheiros. O cliente, arquiteto ele mesmo, queria um projeto que desafiasse suas próprias referências. A solução apostou em uma paleta severa — preto, terracota e verde-musgo — com móveis de design brasileiro dos anos 70.',
+    meta:[{l:'Área',v:'310 m²'},{l:'Local',v:'Pinheiros, SP'},{l:'Status',v:'Concluído'}]
+  }
+];
+
+// Modal open
+document.querySelectorAll('.projeto-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const p = projetos[+card.dataset.id];
+    document.getElementById('modal-cat').textContent = p.cat;
+    document.getElementById('modal-title').textContent = p.name;
+    document.getElementById('modal-desc').textContent = p.desc;
+    document.getElementById('modal-img1').src = p.img1;
+    document.getElementById('modal-img2').src = p.img2;
+    document.getElementById('modal-meta').innerHTML = p.meta.map(m =>
+      `<div class="modal-meta-item"><div class="modal-meta-label">${m.l}</div><div class="modal-meta-val">${m.v}</div></div>`
+    ).join('');
+    document.getElementById('modal-bg').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
+});
+
+// Modal close
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-bg').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// Form
+document.getElementById('send-btn').addEventListener('click', function() {
+  this.innerHTML = '✓ Mensagem enviada — retornaremos em breve';
+  this.style.background = 'var(--sage)';
+  this.style.letterSpacing = '.2em';
+});
+</script>
+</body>
+</html>
